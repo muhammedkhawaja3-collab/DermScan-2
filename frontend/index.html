@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- PWA / Theme -->
+    <meta name="theme-color" content="#0A1628" />
+    <meta name="background-color" content="#0A1628" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DermScan" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+
+    <!-- Standard -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="description" content="AI-powered skin health analysis and healing tracker" />
+    <meta name="keywords" content="skin health, dermatology, AI, scan, acne, rash, eczema" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="DermScan - AI Skin Intelligence" />
+    <meta property="og:description" content="Analyze your skin with AI. Track healing. Chat with DermBot." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icon.svg" />
+
+    <title>DermScan - AI Skin Intelligence</title>
+
+    <!-- Splash screen colour on iOS -->
+    <style>
+      html, body { background: #0A1628; margin: 0; padding: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
