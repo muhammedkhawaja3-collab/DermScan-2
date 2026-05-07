@@ -3,10 +3,10 @@ import { useState, useEffect, useRef } from "react";
 const haptic = (p = 12) => navigator.vibrate?.(p);
 
 const glass = {
-  background: "rgba(15,31,61,0.72)",
-  backdropFilter: "blur(14px)",
-  WebkitBackdropFilter: "blur(14px)",
-  border: "1px solid rgba(100,160,255,0.15)",
+  background: "rgba(13,27,46,0.88)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(37,99,235,0.18)",
 };
 
 function getSeverity(text) {
@@ -143,8 +143,8 @@ export default function Scan() {
   return (
     <div className="ds-fade" style={{ minHeight: "100vh", color: "white" }}>
 
-      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(100,160,255,0.1)", display: "flex", alignItems: "center" }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#42A5F5" }}>🔬 Skin Scan</div>
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(37,99,235,0.12)", display: "flex", alignItems: "center" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#2563EB" }}>🔬 Skin Scan</div>
       </div>
 
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 100px" }}>
@@ -202,8 +202,16 @@ export default function Scan() {
                 {flashOn ? "⚡" : "🔦"}
               </div>
 
-              <div onClick={camError?undefined:capture} className="ds-pressable" style={{ width:74, height:74, borderRadius:"50%", background:camError?"#1A2D50":"linear-gradient(135deg,#1565C0,#42A5F5)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, cursor:camError?"not-allowed":"pointer", boxShadow:camError?"none":"0 0 0 6px rgba(66,165,245,0.15), 0 0 32px rgba(66,165,245,0.5)", border:"3px solid rgba(255,255,255,0.12)" }}>
-                📸
+              <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                {!camError && (
+                  <>
+                    <div style={{ position:"absolute", width:94, height:94, borderRadius:"50%", border:"2px solid rgba(37,99,235,0.45)", animation:"captureRing 2s ease-out infinite" }} />
+                    <div style={{ position:"absolute", width:94, height:94, borderRadius:"50%", border:"2px solid rgba(37,99,235,0.3)", animation:"captureRing 2s ease-out 0.6s infinite" }} />
+                  </>
+                )}
+                <div onClick={camError?undefined:capture} className="ds-pressable" style={{ width:74, height:74, borderRadius:"50%", background:camError?"#0D1B2E":"linear-gradient(135deg,#2563EB,#1d4ed8)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, cursor:camError?"not-allowed":"pointer", boxShadow:camError?"none":"0 0 0 5px rgba(37,99,235,0.15), 0 0 36px rgba(37,99,235,0.55)", border:"3px solid rgba(255,255,255,0.1)", position:"relative", zIndex:1 }}>
+                  📸
+                </div>
               </div>
 
               <div onClick={() => setFacingMode(f => f==="environment"?"user":"environment")} className="ds-pressable" style={{ width:50, height:50, borderRadius:"50%", background:"rgba(100,160,255,0.1)", border:"1px solid rgba(100,160,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, cursor:"pointer" }}>
@@ -241,7 +249,7 @@ export default function Scan() {
                 <button onClick={retake} className="ds-pressable" style={{ flex:1, padding:14, background:"transparent", border:"1px solid rgba(100,160,255,0.25)", borderRadius:14, color:"#8BA4C8", fontWeight:600, fontSize:14, cursor:"pointer" }}>
                   ↩ Retake
                 </button>
-                <button onClick={analyze} className="ds-pressable" style={{ flex:2, padding:14, background:"linear-gradient(135deg,#1565C0,#7C3AED)", border:"none", borderRadius:14, color:"white", fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"0 4px 20px rgba(124,58,237,0.3)" }}>
+                <button onClick={analyze} className="ds-pressable" style={{ flex:2, padding:14, background:"linear-gradient(135deg,#2563EB,#7C3AED)", border:"none", borderRadius:14, color:"white", fontWeight:700, fontSize:14, cursor:"pointer", boxShadow:"0 4px 24px rgba(37,99,235,0.4)" }}>
                   🔬 Analyze with AI
                 </button>
               </div>
@@ -251,7 +259,7 @@ export default function Scan() {
 
         {/* ── RESULT ── */}
         {mode === "result" && (
-          <div className="ds-stagger">
+          <div className="ds-stagger ds-fade">
             {preview && (
               <div style={{ ...glass, borderRadius:18, overflow:"hidden", marginBottom:16 }}>
                 <img src={preview} alt="scan" style={{ width:"100%", maxHeight:190, objectFit:"cover", display:"block" }} />

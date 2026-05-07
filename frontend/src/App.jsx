@@ -30,7 +30,7 @@ export default function App() {
       {showOnboarding && <Onboarding onDone={handleOnboardingDone} />}
 
       <BrowserRouter>
-        <div style={{ width: "100%", minHeight: "100vh", background: "#0A1628", color: "white", fontFamily: "system-ui,-apple-system,sans-serif", position: "relative" }}>
+        <div style={{ width: "100%", minHeight: "100vh", background: "#050D1A", color: "white", fontFamily: "system-ui,-apple-system,sans-serif", position: "relative" }}>
 
           {/* Animated background mesh */}
           <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
