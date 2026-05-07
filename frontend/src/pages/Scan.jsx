@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "../supabase";
 
 const haptic = (p = 12) => navigator.vibrate?.(p);
 
@@ -103,17 +104,18 @@ export default function Scan() {
       const text = data.result;
       const sev = getSeverity(text);
       const condition = text.split(/[.!?\n]/)[0].trim().slice(0, 100);
-      const scan = {
-        id: Date.now(),
-        date: new Date().toLocaleString(),
-        imageUrl: base64,
-        condition,
-        severity: sev.label,
-        result: text,
-        healingPercent: 0,
-      };
-      const existing = JSON.parse(localStorage.getItem("dermscan_scans") || "[]");
-      localStorage.setItem("dermscan_scans", JSON.stringify([scan, ...existing]));
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase.from('scans').insert({
+          user_id:         session.user.id,
+          date:            new Date().toLocaleString(),
+          image_url:       base64,
+          condition,
+          severity:        sev.label,
+          result:          text,
+          healing_percent: 0,
+        });
+      }
       haptic([30, 20, 60]);
       setResult(text);
       setMode("result");

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 
 const glass = {
   background: "rgba(13,27,46,0.88)",
@@ -30,9 +31,26 @@ export default function Profile() {
   const [privateMode, setPrivateMode] = useState(false);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("dermscan_scans") || "[]");
-    setScans(data);
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data } = await supabase
+        .from('scans')
+        .select('id, condition, healing_percent')
+        .eq('user_id', session.user.id);
+      if (data) setScans(data.map(r => ({
+        id:             r.id,
+        condition:      r.condition,
+        healingPercent: r.healing_percent ?? 0,
+      })));
+    };
+    load();
   }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
 
   const totalScans       = scans.length;
   const uniqueConditions = new Set(
@@ -42,7 +60,7 @@ export default function Profile() {
     ? Math.round(scans.reduce((sum, s) => sum + (s.healingPercent ?? 0), 0) / scans.length)
     : 0;
 
-  const radius       = 50;
+  const radius        = 50;
   const circumference = 2 * Math.PI * radius;
   const dashOffset    = circumference * (1 - avgHealing / 100);
 
@@ -81,7 +99,6 @@ export default function Profile() {
         {/* Avatar with SVG health ring */}
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:28 }}>
           <div style={{ position:"relative", width:112, height:112, marginBottom:14, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            {/* SVG health score ring */}
             <svg width="112" height="112" style={{ position:"absolute", inset:0 }}>
               <defs>
                 <linearGradient id="healthGrad" gradientUnits="userSpaceOnUse" x1="56" y1="6" x2="56" y2="106">
@@ -89,9 +106,7 @@ export default function Profile() {
                   <stop offset="100%" stopColor="#2563EB" />
                 </linearGradient>
               </defs>
-              {/* Track */}
               <circle cx="56" cy="56" r={radius} fill="none" stroke="rgba(37,99,235,0.1)" strokeWidth="6" />
-              {/* Progress */}
               <circle
                 cx="56" cy="56" r={radius}
                 fill="none"
@@ -104,7 +119,6 @@ export default function Profile() {
                 style={{ transition:"stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)" }}
               />
             </svg>
-            {/* Avatar circle */}
             <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#2563EB)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, fontWeight:800, color:"white", boxShadow:"0 0 28px rgba(124,58,237,0.4)", zIndex:1 }}>
               ME
             </div>
@@ -117,7 +131,6 @@ export default function Profile() {
             <div style={{ fontSize:22, fontWeight:900, color:"#2563EB", marginTop:6 }}>{avgHealing}% <span style={{fontSize:12,fontWeight:400,color:"#8BA4C8"}}>avg healing</span></div>
           )}
 
-          {/* Motivational message */}
           <div style={{ marginTop:10, fontSize:12, color:"#6EE7B7", textAlign:"center", padding:"8px 20px", background:"rgba(16,185,129,0.07)", border:"1px solid rgba(16,185,129,0.15)", borderRadius:12, maxWidth:280 }}>
             {getMotivation(totalScans)}
           </div>
@@ -150,7 +163,7 @@ export default function Profile() {
         )}
 
         {/* Settings */}
-        <div style={{ ...glass, borderRadius:20, overflow:"hidden", marginBottom:28 }}>
+        <div style={{ ...glass, borderRadius:20, overflow:"hidden", marginBottom:20 }}>
           {settingsRows.map((row, i) => (
             <div key={row.label} onClick={row.action} className={row.action?"ds-pressable":""} style={{ display:"flex", alignItems:"center", gap:14, padding:"15px 16px", borderBottom: i<settingsRows.length-1?"1px solid rgba(37,99,235,0.07)":"none", cursor:row.action?"pointer":"default", transition:"background 0.15s" }}
               onMouseEnter={e => row.action && (e.currentTarget.style.background="rgba(37,99,235,0.05)")}
@@ -167,6 +180,15 @@ export default function Profile() {
             </div>
           ))}
         </div>
+
+        {/* Sign Out */}
+        <button
+          onClick={signOut}
+          className="ds-pressable"
+          style={{ width:"100%", marginBottom:24, padding:"14px", background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.22)", borderRadius:14, color:"#EF4444", fontWeight:700, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}
+        >
+          🚪 Sign Out
+        </button>
 
         <div style={{ textAlign:"center", fontSize:11, color:"rgba(37,99,235,0.25)", paddingBottom:8 }}>
           DermScan v1.0.0

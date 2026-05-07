@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 
 const FILTERS = ["All", "Wounds", "Rashes", "Blemishes", "Other"];
 
@@ -15,6 +16,16 @@ const glass = {
   WebkitBackdropFilter: "blur(12px)",
   border: "1px solid rgba(37,99,235,0.16)",
 };
+
+const mapScan = (row) => ({
+  id:             row.id,
+  date:           row.date,
+  imageUrl:       row.image_url,
+  condition:      row.condition,
+  severity:       row.severity,
+  result:         row.result,
+  healingPercent: row.healing_percent ?? 0,
+});
 
 function matchCategory(scan, filter) {
   if (filter === "All") return true;
@@ -32,26 +43,33 @@ export default function History() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("dermscan_scans") || "[]");
-    setScans(data);
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data } = await supabase
+        .from('scans')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('date', { ascending: false });
+      if (data) setScans(data.map(mapScan));
+    };
+    load();
   }, []);
 
-  const save = (updated) => {
-    setScans(updated);
-    localStorage.setItem("dermscan_scans", JSON.stringify(updated));
-  };
-
-  const deleteOne = (id, e) => {
+  const deleteOne = async (id, e) => {
     e.stopPropagation();
     if (!confirm("Delete this scan?")) return;
-    save(scans.filter(s => s.id !== id));
+    await supabase.from('scans').delete().eq('id', id);
+    setScans(prev => prev.filter(s => s.id !== id));
     if (expandedId === id) setExpandedId(null);
   };
 
-  const clearAll = () => {
+  const clearAll = async () => {
     if (!confirm("Delete all scans? This cannot be undone.")) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    await supabase.from('scans').delete().eq('user_id', session.user.id);
     setScans([]);
-    localStorage.removeItem("dermscan_scans");
     setExpandedId(null);
   };
 
