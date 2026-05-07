@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase";
+
+const AVATARS = ["🦊","🐼","🦁","🐯","🦋","🐬","🦅","🐺","🦄","🐸","🦝","🐻"];
 
 const glass = {
   background: "rgba(13,27,46,0.88)",
@@ -25,15 +27,20 @@ function getMotivation(count) {
 }
 
 export default function Profile() {
-  const navigate = useNavigate();
+  const navigate    = useNavigate();
+  const pickerRef   = useRef(null);
   const [scans, setScans]             = useState([]);
   const [reminders, setReminders]     = useState(false);
   const [privateMode, setPrivateMode] = useState(false);
+  const [avatar, setAvatar]           = useState(() => localStorage.getItem("dermscan_avatar") || "");
+  const [showPicker, setShowPicker]   = useState(false);
+  const [userEmail, setUserEmail]     = useState("");
 
   useEffect(() => {
     const load = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+      setUserEmail(session.user.email || "");
       const { data } = await supabase
         .from('scans')
         .select('id, condition, healing_percent')
@@ -46,6 +53,26 @@ export default function Profile() {
     };
     load();
   }, []);
+
+  // Close picker when clicking outside
+  useEffect(() => {
+    if (!showPicker) return;
+    const handle = (e) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target)) setShowPicker(false);
+    };
+    document.addEventListener("mousedown", handle);
+    document.addEventListener("touchstart", handle);
+    return () => {
+      document.removeEventListener("mousedown", handle);
+      document.removeEventListener("touchstart", handle);
+    };
+  }, [showPicker]);
+
+  const selectAvatar = (emoji) => {
+    setAvatar(emoji);
+    localStorage.setItem("dermscan_avatar", emoji);
+    setShowPicker(false);
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -63,6 +90,9 @@ export default function Profile() {
   const radius        = 50;
   const circumference = 2 * Math.PI * radius;
   const dashOffset    = circumference * (1 - avgHealing / 100);
+
+  const avatarDisplay = avatar || userEmail?.[0]?.toUpperCase() || "?";
+  const isEmoji       = AVATARS.includes(avatar);
 
   const shareProfile = async () => {
     if (!navigator.share) { alert("Sharing not supported on this device."); return; }
@@ -96,9 +126,16 @@ export default function Profile() {
 
       <div style={{ maxWidth:700, margin:"0 auto", padding:"28px 20px 100px" }}>
 
-        {/* Avatar with SVG health ring */}
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:28 }}>
-          <div style={{ position:"relative", width:112, height:112, marginBottom:14, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        {/* Avatar section */}
+        <div ref={pickerRef} style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:28 }}>
+
+          {/* Clickable avatar ring */}
+          <div
+            onClick={() => setShowPicker(p => !p)}
+            className="ds-pressable"
+            style={{ position:"relative", width:112, height:112, marginBottom:14, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}
+          >
+            {/* SVG health score ring */}
             <svg width="112" height="112" style={{ position:"absolute", inset:0 }}>
               <defs>
                 <linearGradient id="healthGrad" gradientUnits="userSpaceOnUse" x1="56" y1="6" x2="56" y2="106">
@@ -119,13 +156,56 @@ export default function Profile() {
                 style={{ transition:"stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)" }}
               />
             </svg>
-            <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#2563EB)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, fontWeight:800, color:"white", boxShadow:"0 0 28px rgba(124,58,237,0.4)", zIndex:1 }}>
-              ME
+
+            {/* Avatar circle */}
+            <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#2563EB)", display:"flex", alignItems:"center", justifyContent:"center", fontSize: isEmoji ? 38 : 28, fontWeight:800, color:"white", boxShadow:"0 0 28px rgba(124,58,237,0.4)", zIndex:1, transition:"transform 0.15s", userSelect:"none" }}>
+              {avatarDisplay}
+            </div>
+
+            {/* Pencil badge */}
+            <div style={{ position:"absolute", bottom:13, right:13, width:24, height:24, borderRadius:"50%", background:"linear-gradient(135deg,#2563EB,#1d4ed8)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, zIndex:2, boxShadow:"0 2px 8px rgba(0,0,0,0.45), 0 0 0 2px rgba(5,13,26,0.9)", pointerEvents:"none" }}>
+              ✏️
             </div>
           </div>
 
+          {/* Emoji picker grid */}
+          {showPicker && (
+            <div style={{ width:"100%", maxWidth:300, background:"rgba(10,20,38,0.97)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", border:"1px solid rgba(37,99,235,0.25)", borderRadius:20, padding:"16px 14px", marginBottom:16, boxShadow:"0 16px 48px rgba(0,0,0,0.5)" }}>
+              <div style={{ fontSize:11, color:"#8BA4C8", textAlign:"center", fontWeight:700, letterSpacing:0.6, marginBottom:12 }}>
+                CHOOSE YOUR AVATAR
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:8 }}>
+                {AVATARS.map(emoji => (
+                  <div
+                    key={emoji}
+                    onClick={() => selectAvatar(emoji)}
+                    className="ds-pressable"
+                    style={{
+                      height:44, borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center",
+                      fontSize:24, cursor:"pointer", transition:"all 0.15s",
+                      background: avatar === emoji ? "rgba(37,99,235,0.3)"  : "rgba(37,99,235,0.07)",
+                      border:     `1px solid ${avatar === emoji ? "rgba(37,99,235,0.6)" : "rgba(37,99,235,0.14)"}`,
+                      boxShadow:  avatar === emoji ? "0 0 12px rgba(37,99,235,0.3)" : "none",
+                      transform:  avatar === emoji ? "scale(1.08)" : "scale(1)",
+                    }}
+                  >
+                    {emoji}
+                  </div>
+                ))}
+              </div>
+              {avatar && (
+                <button
+                  onClick={() => selectAvatar("")}
+                  style={{ marginTop:12, width:"100%", padding:"8px", background:"transparent", border:"1px solid rgba(239,68,68,0.2)", borderRadius:10, color:"rgba(239,68,68,0.6)", fontSize:11, cursor:"pointer", fontWeight:600 }}
+                >
+                  Remove avatar
+                </button>
+              )}
+            </div>
+          )}
+
           <div style={{ fontSize:17, fontWeight:800, color:"white" }}>My Profile</div>
-          <div style={{ fontSize:12, color:"#8BA4C8", marginTop:3 }}>DermScan Member</div>
+          <div style={{ fontSize:12, color:"#8BA4C8", marginTop:3 }}>{userEmail || "DermScan Member"}</div>
 
           {avgHealing > 0 && (
             <div style={{ fontSize:22, fontWeight:900, color:"#2563EB", marginTop:6 }}>{avgHealing}% <span style={{fontSize:12,fontWeight:400,color:"#8BA4C8"}}>avg healing</span></div>
