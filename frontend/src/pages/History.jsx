@@ -10,10 +10,10 @@ const SEV = {
 };
 
 const glass = {
-  background: "rgba(15,31,61,0.72)",
+  background: "rgba(13,27,46,0.88)",
   backdropFilter: "blur(12px)",
   WebkitBackdropFilter: "blur(12px)",
-  border: "1px solid rgba(100,160,255,0.15)",
+  border: "1px solid rgba(37,99,235,0.16)",
 };
 
 function matchCategory(scan, filter) {
@@ -69,8 +69,8 @@ export default function History() {
     <div className="ds-fade" style={{ minHeight:"100vh", color:"white" }}>
 
       {/* Header */}
-      <div style={{ padding:"16px 20px", borderBottom:"1px solid rgba(100,160,255,0.1)", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-        <div style={{ fontSize:16, fontWeight:700, color:"#42A5F5" }}>📊 Healing History</div>
+      <div style={{ padding:"14px 16px", borderBottom:"1px solid rgba(37,99,235,0.1)", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ fontSize:16, fontWeight:700, color:"#2563EB" }}>📊 Healing History</div>
         {scans.length > 0 && (
           <button
             onClick={clearAll}
@@ -86,7 +86,7 @@ export default function History() {
       {scans.length > 0 && (
         <div className="ds-stagger" style={{ display:"flex", gap:10, padding:"14px 20px 0" }}>
           {[
-            { value: scans.length,                          label: "Total Scans", color: "#42A5F5" },
+            { value: scans.length,                          label: "Total Scans", color: "#2563EB" },
             { value: `${avgHealing}%`,                      label: "Avg Healing", color: "#10B981" },
             { value: SEV[scans[0]?.severity]?.label ?? "—", label: "Last Scan",   color: SEV[scans[0]?.severity]?.color ?? "#8BA4C8" },
           ].map(s => (
@@ -108,9 +108,9 @@ export default function History() {
             style={{
               padding:"6px 16px", borderRadius:20, fontSize:12, fontWeight:600,
               cursor:"pointer", flexShrink:0, transition:"all 0.2s",
-              background: filter===f ? "linear-gradient(135deg,#1565C0,#42A5F5)" : "rgba(100,160,255,0.08)",
+              background: filter===f ? "linear-gradient(135deg,#2563EB,#1d4ed8)" : "rgba(37,99,235,0.08)",
               color: filter===f ? "white" : "#8BA4C8",
-              border: filter===f ? "none" : "1px solid rgba(100,160,255,0.15)",
+              border: filter===f ? "none" : "1px solid rgba(37,99,235,0.15)",
             }}
           >
             {f}
@@ -133,7 +133,7 @@ export default function History() {
               <button
                 onClick={() => navigate("/scan")}
                 className="ds-pressable"
-                style={{ padding:"13px 28px", background:"linear-gradient(135deg,#1565C0,#42A5F5)", border:"none", borderRadius:14, color:"white", fontWeight:700, fontSize:14, cursor:"pointer" }}
+                style={{ padding:"13px 28px", background:"linear-gradient(135deg,#2563EB,#1d4ed8)", border:"none", borderRadius:14, color:"white", fontWeight:700, fontSize:14, cursor:"pointer" }}
               >
                 📷 Take Your First Scan
               </button>
@@ -181,20 +181,20 @@ export default function History() {
                     <div style={{ fontSize:11, color:"#8BA4C8", marginBottom:8 }}>{scan.date}</div>
 
                     {/* Progress bar */}
-                    <div style={{ height:5, background:"rgba(100,160,255,0.1)", borderRadius:4, overflow:"hidden", marginBottom:5 }}>
-                      <div style={{ height:"100%", width:`${healing}%`, background:"linear-gradient(90deg,#1565C0,#10B981)", borderRadius:4 }} />
+                    <div style={{ height:5, background:"rgba(37,99,235,0.1)", borderRadius:4, overflow:"hidden", marginBottom:5 }}>
+                      <div style={{ height:"100%", width:`${healing}%`, background:"linear-gradient(90deg,#2563EB,#10B981)", borderRadius:4 }} />
                     </div>
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom: isExpanded ? 10 : 0 }}>
                       <div style={{ fontSize:10, color:"#8BA4C8" }}>{healing}% healed</div>
-                      <div style={{ fontSize:10, color:"#42A5F5", fontWeight:600 }}>
+                      <div style={{ fontSize:10, color:"#2563EB", fontWeight:600 }}>
                         {isExpanded ? "▲ Hide" : "▼ Details"}
                       </div>
                     </div>
 
                     {/* Expanded: full AI result */}
                     {isExpanded && scan.result && (
-                      <div style={{ borderTop:"1px solid rgba(100,160,255,0.1)", paddingTop:10 }}>
-                        <div style={{ fontSize:10, fontWeight:700, color:"#42A5F5", marginBottom:6 }}>📋 AI Analysis</div>
+                      <div style={{ borderTop:"1px solid rgba(37,99,235,0.1)", paddingTop:10 }}>
+                        <div style={{ fontSize:10, fontWeight:700, color:"#2563EB", marginBottom:6 }}>📋 AI Analysis</div>
                         <div style={{ fontSize:11, color:"#C8DEFF", lineHeight:1.7 }}>{scan.result}</div>
                         <div style={{ fontSize:9, color:"#8BA4C8", marginTop:8, fontStyle:"italic" }}>
                           ⚠️ Not a medical diagnosis. Consult a professional.

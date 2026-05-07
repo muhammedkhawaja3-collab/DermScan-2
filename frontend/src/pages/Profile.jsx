@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const glass = {
-  background: "rgba(15,31,61,0.72)",
+  background: "rgba(13,27,46,0.88)",
   backdropFilter: "blur(12px)",
   WebkitBackdropFilter: "blur(12px)",
-  border: "1px solid rgba(100,160,255,0.15)",
+  border: "1px solid rgba(37,99,235,0.16)",
 };
 
 function Toggle({ value, onChange }) {
   return (
-    <div onClick={() => onChange(!value)} style={{ width:46, height:26, borderRadius:13, cursor:"pointer", position:"relative", background: value?"linear-gradient(135deg,#1565C0,#42A5F5)":"rgba(100,160,255,0.12)", border:`1px solid ${value?"rgba(66,165,245,0.4)":"rgba(100,160,255,0.2)"}`, flexShrink:0, transition:"background 0.25s" }}>
+    <div onClick={() => onChange(!value)} style={{ width:46, height:26, borderRadius:13, cursor:"pointer", position:"relative", background: value?"linear-gradient(135deg,#2563EB,#1d4ed8)":"rgba(37,99,235,0.12)", border:`1px solid ${value?"rgba(37,99,235,0.5)":"rgba(37,99,235,0.2)"}`, flexShrink:0, transition:"background 0.25s" }}>
       <div style={{ position:"absolute", top:4, left: value?24:4, width:16, height:16, borderRadius:"50%", background:"white", transition:"left 0.25s cubic-bezier(0.34,1.56,0.64,1)", boxShadow:"0 1px 4px rgba(0,0,0,0.35)" }} />
     </div>
   );
@@ -23,6 +24,7 @@ function getMotivation(count) {
 }
 
 export default function Profile() {
+  const navigate = useNavigate();
   const [scans, setScans]             = useState([]);
   const [reminders, setReminders]     = useState(false);
   const [privateMode, setPrivateMode] = useState(false);
@@ -54,19 +56,24 @@ export default function Profile() {
     } catch {}
   };
 
+  const goPremium = () => {
+    navigate("/");
+    setTimeout(() => document.getElementById("pricing")?.scrollIntoView({ behavior:"smooth" }), 350);
+  };
+
   const settingsRows = [
-    { icon:"🔔", label:"Healing Reminders", sub:"Daily check-in notifications",     right:<Toggle value={reminders}   onChange={setReminders} /> },
-    { icon:"🔒", label:"Private Mode",       sub:"Hide scans from shared devices",   right:<Toggle value={privateMode} onChange={setPrivateMode} /> },
-    { icon:"🌐", label:"Language",           sub:"App display language",             right:<div style={{fontSize:12,color:"#42A5F5"}}>English</div> },
-    { icon:"👑", label:"Upgrade to Premium", sub:"Unlock advanced AI features",      right:<div style={{fontSize:16,color:"#42A5F5"}}>›</div>, action:() => alert("Premium coming soon!") },
-    { icon:"📄", label:"Privacy Policy",     sub:"How we handle your data",          right:<div style={{fontSize:16,color:"#42A5F5"}}>›</div>, action:() => alert("Your data stays on your device. Nothing is shared without your consent.") },
+    { icon:"🔔", label:"Healing Reminders", sub:"Daily check-in notifications",    right:<Toggle value={reminders}   onChange={setReminders} /> },
+    { icon:"🔒", label:"Private Mode",       sub:"Hide scans from shared devices",  right:<Toggle value={privateMode} onChange={setPrivateMode} /> },
+    { icon:"🌐", label:"Language",           sub:"App display language",            right:<div style={{fontSize:12,color:"#2563EB"}}>English</div> },
+    { icon:"👑", label:"Upgrade to Premium", sub:"Unlock advanced AI features",     right:<div style={{fontSize:16,color:"#F59E0B"}}>›</div>, action:goPremium },
+    { icon:"📄", label:"Privacy Policy",     sub:"How we handle your data",         right:<div style={{fontSize:16,color:"#2563EB"}}>›</div>, action:() => alert("Your data stays on your device. Nothing is shared without your consent.") },
   ];
 
   return (
     <div className="ds-fade" style={{ minHeight:"100vh", color:"white" }}>
 
-      <div style={{ padding:"16px 20px", borderBottom:"1px solid rgba(100,160,255,0.1)" }}>
-        <div style={{ fontSize:16, fontWeight:700, color:"#42A5F5" }}>👤 Profile</div>
+      <div style={{ padding:"16px 20px", borderBottom:"1px solid rgba(37,99,235,0.1)" }}>
+        <div style={{ fontSize:16, fontWeight:700, color:"#2563EB" }}>👤 Profile</div>
       </div>
 
       <div style={{ maxWidth:700, margin:"0 auto", padding:"28px 20px 100px" }}>
@@ -79,16 +86,16 @@ export default function Profile() {
               <defs>
                 <linearGradient id="healthGrad" gradientUnits="userSpaceOnUse" x1="56" y1="6" x2="56" y2="106">
                   <stop offset="0%" stopColor="#7C3AED" />
-                  <stop offset="100%" stopColor="#42A5F5" />
+                  <stop offset="100%" stopColor="#2563EB" />
                 </linearGradient>
               </defs>
               {/* Track */}
-              <circle cx="56" cy="56" r={radius} fill="none" stroke="rgba(100,160,255,0.1)" strokeWidth="6" />
+              <circle cx="56" cy="56" r={radius} fill="none" stroke="rgba(37,99,235,0.1)" strokeWidth="6" />
               {/* Progress */}
               <circle
                 cx="56" cy="56" r={radius}
                 fill="none"
-                stroke={avgHealing > 0 ? "url(#healthGrad)" : "rgba(100,160,255,0.1)"}
+                stroke={avgHealing > 0 ? "url(#healthGrad)" : "rgba(37,99,235,0.1)"}
                 strokeWidth="6"
                 strokeDasharray={circumference}
                 strokeDashoffset={dashOffset}
@@ -98,7 +105,7 @@ export default function Profile() {
               />
             </svg>
             {/* Avatar circle */}
-            <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#1565C0)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, fontWeight:800, color:"white", boxShadow:"0 0 28px rgba(124,58,237,0.4)", zIndex:1 }}>
+            <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#2563EB)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, fontWeight:800, color:"white", boxShadow:"0 0 28px rgba(124,58,237,0.4)", zIndex:1 }}>
               ME
             </div>
           </div>
@@ -107,7 +114,7 @@ export default function Profile() {
           <div style={{ fontSize:12, color:"#8BA4C8", marginTop:3 }}>DermScan Member</div>
 
           {avgHealing > 0 && (
-            <div style={{ fontSize:22, fontWeight:900, color:"#42A5F5", marginTop:6 }}>{avgHealing}% <span style={{fontSize:12,fontWeight:400,color:"#8BA4C8"}}>avg healing</span></div>
+            <div style={{ fontSize:22, fontWeight:900, color:"#2563EB", marginTop:6 }}>{avgHealing}% <span style={{fontSize:12,fontWeight:400,color:"#8BA4C8"}}>avg healing</span></div>
           )}
 
           {/* Motivational message */}
@@ -125,18 +132,18 @@ export default function Profile() {
           ].map(s => (
             <div key={s.label} style={{ ...glass, flex:1, borderRadius:16, padding:"14px 8px", textAlign:"center" }}>
               <div style={{ fontSize:15, marginBottom:4 }}>{s.icon}</div>
-              <div style={{ fontSize:20, fontWeight:800, color:"#42A5F5" }}>{s.value}</div>
+              <div style={{ fontSize:20, fontWeight:800, color:"#2563EB" }}>{s.value}</div>
               <div style={{ fontSize:9, color:"#8BA4C8", marginTop:3, letterSpacing:0.5 }}>{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Share button */}
-        {navigator.share && (
+        {typeof navigator !== "undefined" && navigator.share && (
           <button
             onClick={shareProfile}
             className="ds-pressable"
-            style={{ width:"100%", marginBottom:20, padding:"13px", background:"rgba(66,165,245,0.08)", border:"1px solid rgba(66,165,245,0.22)", borderRadius:14, color:"#42A5F5", fontWeight:700, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}
+            style={{ width:"100%", marginBottom:20, padding:"13px", background:"rgba(37,99,235,0.08)", border:"1px solid rgba(37,99,235,0.22)", borderRadius:14, color:"#2563EB", fontWeight:700, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}
           >
             ↗ Share My Health Score
           </button>
@@ -145,11 +152,11 @@ export default function Profile() {
         {/* Settings */}
         <div style={{ ...glass, borderRadius:20, overflow:"hidden", marginBottom:28 }}>
           {settingsRows.map((row, i) => (
-            <div key={row.label} onClick={row.action} className={row.action?"ds-pressable":""} style={{ display:"flex", alignItems:"center", gap:14, padding:"15px 16px", borderBottom: i<settingsRows.length-1?"1px solid rgba(100,160,255,0.07)":"none", cursor:row.action?"pointer":"default", transition:"background 0.15s" }}
-              onMouseEnter={e => row.action && (e.currentTarget.style.background="rgba(66,165,245,0.05)")}
+            <div key={row.label} onClick={row.action} className={row.action?"ds-pressable":""} style={{ display:"flex", alignItems:"center", gap:14, padding:"15px 16px", borderBottom: i<settingsRows.length-1?"1px solid rgba(37,99,235,0.07)":"none", cursor:row.action?"pointer":"default", transition:"background 0.15s" }}
+              onMouseEnter={e => row.action && (e.currentTarget.style.background="rgba(37,99,235,0.05)")}
               onMouseLeave={e => row.action && (e.currentTarget.style.background="transparent")}
             >
-              <div style={{ width:40, height:40, borderRadius:12, background:"rgba(66,165,245,0.1)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, flexShrink:0 }}>
+              <div style={{ width:40, height:40, borderRadius:12, background:"rgba(37,99,235,0.1)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, flexShrink:0 }}>
                 {row.icon}
               </div>
               <div style={{ flex:1 }}>
@@ -161,7 +168,7 @@ export default function Profile() {
           ))}
         </div>
 
-        <div style={{ textAlign:"center", fontSize:11, color:"rgba(100,160,255,0.22)", paddingBottom:8 }}>
+        <div style={{ textAlign:"center", fontSize:11, color:"rgba(37,99,235,0.25)", paddingBottom:8 }}>
           DermScan v1.0.0
         </div>
       </div>

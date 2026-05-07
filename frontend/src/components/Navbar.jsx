@@ -11,6 +11,16 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [hovLink, setHovLink] = useState(null);
 
+  const goToPricing = () => {
+    const el = document.getElementById("pricing");
+    if (el) {
+      el.scrollIntoView({ behavior:"smooth" });
+    } else {
+      navigate("/");
+      setTimeout(() => document.getElementById("pricing")?.scrollIntoView({ behavior:"smooth" }), 350);
+    }
+  };
+
   return (
     <>
       {/* ── DESKTOP TOP BAR ── */}
@@ -89,10 +99,10 @@ export default function Navbar() {
 
         {/* Premium CTA */}
         <div
-          onClick={() => alert("Premium coming soon!")}
+          onClick={goToPricing}
           className="ds-pressable"
-          style={{ background:"linear-gradient(135deg,#92400e,#F59E0B)", borderRadius:50, padding:"8px 18px", cursor:"pointer", fontSize:12, fontWeight:800, color:"#1a0a00", whiteSpace:"nowrap", boxShadow:"0 0 20px rgba(245,158,11,0.3)", letterSpacing:0.5 }}
-          onMouseEnter={e => e.currentTarget.style.boxShadow="0 0 32px rgba(245,158,11,0.5)"}
+          style={{ background:"linear-gradient(135deg,#92400e,#F59E0B)", borderRadius:50, padding:"8px 20px", cursor:"pointer", fontSize:12, fontWeight:800, color:"#1a0a00", whiteSpace:"nowrap", boxShadow:"0 0 20px rgba(245,158,11,0.3)", letterSpacing:0.5, flexShrink:0 }}
+          onMouseEnter={e => e.currentTarget.style.boxShadow="0 0 32px rgba(245,158,11,0.55)"}
           onMouseLeave={e => e.currentTarget.style.boxShadow="0 0 20px rgba(245,158,11,0.3)"}
         >
           👑 GO PREMIUM
@@ -104,13 +114,14 @@ export default function Navbar() {
         className="ds-nav-bottom"
         style={{
           position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200,
-          background: "rgba(5,13,26,0.92)",
-          borderTop: "1px solid rgba(37,99,235,0.12)",
+          background: "rgba(5,13,26,0.95)",
+          borderTop: "1px solid rgba(37,99,235,0.14)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           alignItems: "center",
           justifyContent: "space-around",
-          padding: "10px 16px 18px",
+          padding: "8px 8px 0",
+          height: "calc(62px + env(safe-area-inset-bottom,0px))",
         }}
       >
         {[
@@ -118,9 +129,9 @@ export default function Navbar() {
           { to:"/history", icon:"📊", label:"History", end:false },
         ].map(({ to, icon, label, end }) => (
           <NavLink key={to} to={to} end={end} style={({ isActive }) => ({
-            display:"flex", flexDirection:"column", alignItems:"center", gap:3,
+            display:"flex", flexDirection:"column", alignItems:"center", gap:2,
             fontSize:10, fontWeight:700, color: isActive ? "#2563EB" : "#8BA4C8",
-            textDecoration:"none", minWidth:52, transition:"color 0.15s",
+            textDecoration:"none", minWidth:48, paddingBottom:4,
           })}>
             <span style={{ fontSize:22 }}>{icon}</span>
             {label}
@@ -131,27 +142,26 @@ export default function Navbar() {
         <div
           onClick={() => navigate("/scan")}
           className="ds-pressable"
-          style={{ width:58, height:58, borderRadius:"50%", background:"linear-gradient(135deg,#2563EB,#1d4ed8)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, cursor:"pointer", marginTop:-22, boxShadow:"0 0 28px rgba(37,99,235,0.7), 0 0 0 5px rgba(5,13,26,0.92)", border:"2px solid rgba(37,99,235,0.4)", flexShrink:0 }}
+          style={{ width:54, height:54, borderRadius:"50%", background:"linear-gradient(135deg,#2563EB,#1d4ed8)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, cursor:"pointer", marginBottom:8, boxShadow:"0 0 24px rgba(37,99,235,0.7), 0 0 0 4px rgba(5,13,26,0.95)", border:"2px solid rgba(37,99,235,0.35)", flexShrink:0 }}
         >
           📷
         </div>
 
         <NavLink to="/profile" style={({ isActive }) => ({
-          display:"flex", flexDirection:"column", alignItems:"center", gap:3,
+          display:"flex", flexDirection:"column", alignItems:"center", gap:2,
           fontSize:10, fontWeight:700, color: isActive ? "#2563EB" : "#8BA4C8",
-          textDecoration:"none", minWidth:52, transition:"color 0.15s",
+          textDecoration:"none", minWidth:48, paddingBottom:4,
         })}>
           <span style={{ fontSize:22 }}>👤</span>
           Profile
         </NavLink>
 
         <div
-          onClick={() => alert("Premium coming soon!")}
+          onClick={goToPricing}
           className="ds-pressable"
-          style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, fontSize:10, fontWeight:700, color:"#F59E0B", minWidth:52, cursor:"pointer" }}
+          style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:2, fontSize:10, fontWeight:700, color:"#F59E0B", minWidth:48, cursor:"pointer", paddingBottom:4 }}
         >
-          <span style={{ fontSize:22 }}>👑</span>
-          Premium
+          <span style={{ fontSize:20 }}>👑</span>Premium
         </div>
       </nav>
     </>

@@ -125,6 +125,31 @@ const TICKER_ITEMS = [
   "Instant Results","Free to Use","30+ Conditions","HIPAA Compliant",
 ];
 
+function PricingModal({ plan, onClose }) {
+  const isP = plan === "premium";
+  const signupAlert = () => alert("Sign up coming soon! Enjoy full access while we build payments.");
+  return (
+    <div
+      style={{ position:"fixed", inset:0, zIndex:2000, background:"rgba(0,0,0,0.75)", backdropFilter:"blur(6px)", display:"flex", alignItems:"center", justifyContent:"center", padding:"20px" }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background:"#0D1B2E", border:`2px solid ${isP?"rgba(245,158,11,0.55)":"rgba(124,58,237,0.55)"}`, borderRadius:24, padding:"32px 28px", width:"100%", maxWidth:400, position:"relative" }}
+        onClick={e => e.stopPropagation()}
+      >
+        <button onClick={onClose} style={{ position:"absolute", top:16, right:16, background:"rgba(255,255,255,0.06)", border:"none", color:"white", width:32, height:32, borderRadius:"50%", cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+        <div style={{ fontSize:11, fontWeight:800, color: isP?"#F59E0B":"#A78BFA", letterSpacing:1.5, marginBottom:8 }}>{isP?"👑 PREMIUM PLAN":"STANDARD PLAN"}</div>
+        <div style={{ fontSize:32, fontWeight:900, color:"white", marginBottom:4 }}>{isP?"$12.99":"$8.99"}<span style={{ fontSize:14, fontWeight:400, color:"#8BA4C8" }}>/month</span></div>
+        <div style={{ fontSize:13, color:"#8BA4C8", marginBottom:28, lineHeight:1.6 }}>{isP?"Unlimited scans, priority AI, PDF reports, dermatologist directory & more.":"50 scans/month, advanced analysis, healing tracker, unlimited DermBot & more."}</div>
+        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+          <button onClick={signupAlert} style={{ width:"100%", padding:"14px", background: isP?"linear-gradient(135deg,#F59E0B,#EF4444)":"linear-gradient(135deg,#7C3AED,#2563EB)", border:"none", borderRadius:14, color:"white", fontWeight:700, fontSize:14, cursor:"pointer" }}>✉️ Continue with Email</button>
+          <button onClick={signupAlert} style={{ width:"100%", padding:"14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, color:"white", fontWeight:700, fontSize:14, cursor:"pointer" }}>📱 Continue with Phone</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StarRating({ n }) {
   return (
     <div style={{ display:"flex", gap:2 }}>
@@ -139,11 +164,18 @@ export default function Home() {
   const navigate = useNavigate();
   const openChat = () => window.dispatchEvent(new CustomEvent("open-chat"));
   const [hovPlan, setHovPlan] = useState(null);
+  const [modal, setModal] = useState(null);
 
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior:"smooth" });
 
+  const handlePlanClick = (plan) => {
+    if (plan.id === "free") { navigate("/scan"); return; }
+    setModal(plan.id);
+  };
+
   return (
     <div style={{ minHeight:"100vh", color:"white", overflowX:"hidden" }}>
+      {modal && <PricingModal plan={modal} onClose={() => setModal(null)} />}
 
       {/* ══════════ HERO ══════════ */}
       <section style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden", background:"linear-gradient(180deg,#050D1A 0%,#0D1B2E 60%,#050D1A 100%)", padding:"100px 24px 80px" }}>
@@ -214,7 +246,7 @@ export default function Home() {
 
       {/* ══════════ STATS ══════════ */}
       <section className="ds-section" style={{ padding:"72px 24px", background:"#050D1A" }}>
-        <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:20 }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:20 }}>
           {[
             { v:"98%",  l:"AI Accuracy",    i:"🎯", d:"Validated against clinical outcomes",          c:"#2563EB" },
             { v:"24/7", l:"Always On",      i:"⚡", d:"No appointments, no waiting rooms",            c:"#7C3AED" },
@@ -323,12 +355,12 @@ export default function Home() {
                   {/* CTA */}
                   <button
                     className="ds-pressable"
-                    onClick={() => plan.id === "free" ? navigate("/scan") : alert(`${plan.name} plan coming soon!`)}
+                    onClick={() => handlePlanClick(plan)}
                     style={{ width:"100%", padding:"14px", borderRadius:14, fontWeight:700, fontSize:14, cursor:"pointer", transition:"box-shadow 0.2s ease", ...plan.buttonStyle }}
                     onMouseEnter={e => e.currentTarget.style.boxShadow=`0 0 24px ${plan.glow}`}
                     onMouseLeave={e => e.currentTarget.style.boxShadow="none"}
                   >
-                    {plan.id === "free" ? "Get Started Free" : `Get ${plan.name}`}
+                    {plan.id === "free" ? "Get Started Free" : plan.id === "standard" ? "Start Free Trial" : "Go Premium 👑"}
                   </button>
                 </div>
               );
