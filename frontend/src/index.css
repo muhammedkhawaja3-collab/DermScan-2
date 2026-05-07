@@ -242,3 +242,14 @@ button.ds-pressable, a.ds-pressable { min-height: 44px; }
   50%     { transform: translate(-1%,2%) rotate(-1deg);  }
   75%     { transform: translate(1%,1%)  rotate(0.5deg); }
 }
+
+/* ── Markdown result rendering ── */
+.ds-markdown h1,.ds-markdown h2,.ds-markdown h3 { font-size:13px; font-weight:700; color:white; margin:10px 0 4px; }
+.ds-markdown h4,.ds-markdown h5,.ds-markdown h6 { font-size:12px; font-weight:700; color:#C8DEFF; margin:8px 0 3px; }
+.ds-markdown p  { margin:0 0 8px; }
+.ds-markdown p:last-child { margin-bottom:0; }
+.ds-markdown strong { color:white; font-weight:700; }
+.ds-markdown em { color:#A5C3FF; font-style:italic; }
+.ds-markdown ul,.ds-markdown ol { padding-left:18px; margin:4px 0 8px; }
+.ds-markdown li { margin-bottom:3px; }
+.ds-markdown hr { border:none; border-top:1px solid rgba(37,99,235,0.15); margin:10px 0; }

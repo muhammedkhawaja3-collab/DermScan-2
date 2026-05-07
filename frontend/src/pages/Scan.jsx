@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import { marked } from "marked";
 import { supabase } from "../supabase";
+
+marked.setOptions({ breaks: true });
 
 const haptic = (p = 12) => navigator.vibrate?.(p);
 
@@ -278,7 +281,11 @@ export default function Scan() {
                 )}
               </div>
 
-              <div style={{ fontSize:12, color:"#C8DEFF", lineHeight:1.8, marginBottom:12 }}>{result}</div>
+              <div
+                className="ds-markdown"
+                style={{ fontSize:12, color:"#C8DEFF", lineHeight:1.8, marginBottom:12 }}
+                dangerouslySetInnerHTML={{ __html: marked.parse(result || "") }}
+              />
 
               <div style={{ fontSize:10, color:"#8BA4C8", background:"rgba(245,158,11,0.07)", border:"1px solid rgba(245,158,11,0.2)", borderRadius:10, padding:"8px 10px" }}>
                 ⚠️ This is not a medical diagnosis. Always consult a licensed healthcare professional.
