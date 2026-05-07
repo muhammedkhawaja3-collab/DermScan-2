@@ -12,9 +12,9 @@ const glass = {
 
 function getSeverity(text) {
   const t = text.toLowerCase();
-  if (t.includes("severe")||t.includes("urgent")||t.includes("immediately")||t.includes("serious")||t.includes("emergency"))
+  if (t.includes("high") || t.includes("severe") || t.includes("urgent") || t.includes("emergency"))
     return { label:"high",   display:"High",     color:"#EF4444", bg:"rgba(239,68,68,0.15)"  };
-  if (t.includes("moderate")||t.includes("consult")||t.includes("monitor")||t.includes("concerning")||t.includes("persistent"))
+  if (t.includes("moderate"))
     return { label:"medium", display:"Moderate", color:"#F59E0B", bg:"rgba(245,158,11,0.15)" };
   return   { label:"low",    display:"Low",      color:"#10B981", bg:"rgba(16,185,129,0.15)" };
 }
