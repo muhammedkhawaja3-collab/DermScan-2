@@ -72,7 +72,7 @@ export default function ChatBot() {
     setTyping(true);
     try {
       const res = await axios.post(
-        "http://localhost:8000/chat",
+        "https://dermscan-2-production.up.railway.app/chat",
         { message: text },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -80,7 +80,7 @@ export default function ChatBot() {
       setMessages(m => [...m, { from: "bot", text: res.data.reply }]);
     } catch {
       setTyping(false);
-      setMessages(m => [...m, { from: "bot", text: "Connection error. Make sure the backend is running on http://localhost:8000." }]);
+      setMessages(m => [...m, { from: "bot", text: "Connection error. Make sure the backend is running on https://dermscan-2-production.up.railway.app." }]);
     }
   };
 

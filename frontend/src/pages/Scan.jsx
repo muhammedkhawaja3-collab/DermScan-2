@@ -93,7 +93,7 @@ export default function Scan() {
     form.append("file", blob, "scan.jpg");
     console.log("[DermScan] Sending image to /analyze —", blob.size, "bytes");
     try {
-      const res = await fetch("http://localhost:8000/analyze", {
+      const res = await fetch("https://dermscan-2-production.up.railway.app/analyze", {
         method: "POST",
         body: form,
       });
@@ -119,7 +119,7 @@ export default function Scan() {
       setMode("result");
     } catch (err) {
       console.error("[DermScan] /analyze error:", err);
-      setResult("Error connecting to backend. Make sure it is running on http://localhost:8000.");
+      setResult("Error connecting to backend. Make sure it is running on https://dermscan-2-production.up.railway.app.");
       setMode("result");
     }
     setLoading(false);
