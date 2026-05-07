@@ -9,12 +9,15 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
   background: #0A1628;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* ── Animated background mesh ── */
@@ -41,8 +44,8 @@ html, body {
 /* ── Glass card ── */
 .glass {
   background: rgba(15,31,61,0.72) !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* ── Main content ── */
@@ -54,8 +57,11 @@ html, body {
 @media (min-width: 768px) { .ds-main { padding-bottom: 32px; } }
 
 /* ── Responsive nav ── */
-.ds-nav-top    { display: none;  }
-.ds-nav-bottom { display: flex;  }
+.ds-nav-top    { display: none; }
+.ds-nav-bottom {
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 @media (min-width: 768px) {
   .ds-nav-top    { display: flex; }
   .ds-nav-bottom { display: none; }
@@ -73,12 +79,24 @@ html, body {
   .ds-history-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
 }
 
+/* ── How It Works grid ── */
+.ds-steps-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 768px) {
+  .ds-steps-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+}
+
+/* ── Why DermScan grid ── */
+.ds-why-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 768px) {
+  .ds-why-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+}
+
 /* ── Page fade in ── */
 @keyframes dsIn {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.ds-fade { animation: dsIn 0.35s ease both; }
+.ds-fade { animation: dsIn 0.4s ease both; }
 
 /* ── Staggered children ── */
 .ds-stagger > * { animation: dsIn 0.4s ease both; }
@@ -87,6 +105,7 @@ html, body {
 .ds-stagger > *:nth-child(3) { animation-delay: 0.15s; }
 .ds-stagger > *:nth-child(4) { animation-delay: 0.20s; }
 .ds-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.ds-stagger > *:nth-child(6) { animation-delay: 0.30s; }
 
 /* ── Typing dots ── */
 @keyframes dsTyping {
@@ -109,6 +128,40 @@ html, body {
   100% { opacity: 0;   }
 }
 
+/* ── Corner bracket pulse ── */
+@keyframes bracketPulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 1;    }
+}
+
+/* ── Circular spinner ── */
+.ds-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(66,165,245,0.18);
+  border-top-color: #42A5F5;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Marquee ticker ── */
+.ds-ticker-wrap {
+  overflow: hidden;
+  width: 100%;
+}
+.ds-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ds-ticker 30s linear infinite;
+}
+.ds-ticker-track:hover { animation-play-state: paused; }
+
+@keyframes ds-ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 /* ── ChatBot ── */
 .ds-chat-fab {
   position: fixed; bottom: 90px; right: 16px; z-index: 300;
@@ -122,8 +175,16 @@ html, body {
 }
 
 /* ── Button press ── */
-.ds-pressable { transition: transform 0.1s; }
+.ds-pressable { transition: transform 0.12s ease; }
 .ds-pressable:active { transform: scale(0.95); }
+
+/* ── Tap target minimum ── */
+button.ds-pressable, a.ds-pressable {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar       { width: 4px; }
@@ -146,5 +207,11 @@ html, body {
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ── Profile avatar ring ── */
+/* ── Animated gradient hero text ── */
+@keyframes gradientShift {
+  0%,100% { background-position: 0% 50%; }
+  50%     { background-position: 100% 50%; }
+}
+
+/* ── Profile / misc spin ── */
 @keyframes spin { to { transform: rotate(360deg); } }

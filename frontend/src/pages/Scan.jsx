@@ -179,6 +179,18 @@ export default function Scan() {
                     </div>
                   </div>
 
+                  {/* Corner brackets */}
+                  <div style={{ position:"absolute", inset:0, pointerEvents:"none" }}>
+                    {[
+                      { top:12,    left:12,    borderLeft:"2px solid #42A5F5", borderTop:"2px solid #42A5F5"    },
+                      { top:12,    right:12,   borderRight:"2px solid #42A5F5", borderTop:"2px solid #42A5F5"   },
+                      { bottom:12, left:12,    borderLeft:"2px solid #42A5F5", borderBottom:"2px solid #42A5F5" },
+                      { bottom:12, right:12,   borderRight:"2px solid #42A5F5", borderBottom:"2px solid #42A5F5"},
+                    ].map((s, i) => (
+                      <div key={i} style={{ position:"absolute", width:22, height:22, borderRadius:2, animation:`bracketPulse 2s ease-in-out ${i * 0.2}s infinite`, ...s }} />
+                    ))}
+                  </div>
+
                   {/* Capture flash */}
                   {flash && <div style={{ position:"absolute", inset:0, background:"white", animation:"captureFlash 0.3s ease forwards", pointerEvents:"none" }} />}
                 </>
@@ -211,13 +223,12 @@ export default function Scan() {
             <div style={{ ...glass, borderRadius: 22, overflow:"hidden", marginBottom:16, position:"relative" }}>
               <img src={preview} alt="preview" style={{ width:"100%", maxHeight:360, objectFit:"cover", display:"block" }} />
 
-              {/* Scanning animation */}
+              {/* Analyzing overlay */}
               {loading && (
                 <div style={{ position:"absolute", inset:0 }}>
-                  <div style={{ position:"absolute", inset:0, background:"rgba(10,22,40,0.65)", backdropFilter:"blur(2px)" }} />
-                  <div style={{ position:"absolute", left:0, right:0, height:2, background:"linear-gradient(90deg,transparent,#42A5F5,transparent)", animation:"scanLine 1.6s ease-in-out infinite" }} />
-                  <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10 }}>
-                    <div style={{ fontSize:36 }}>🔬</div>
+                  <div style={{ position:"absolute", inset:0, background:"rgba(10,22,40,0.7)", backdropFilter:"blur(2px)" }} />
+                  <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12 }}>
+                    <div className="ds-spinner" style={{ width:48, height:48, borderWidth:4 }} />
                     <div style={{ fontSize:13, color:"#42A5F5", fontWeight:600, letterSpacing:1 }}>ANALYZING…</div>
                     <div style={{ fontSize:11, color:"#8BA4C8" }}>AI is examining your skin</div>
                   </div>

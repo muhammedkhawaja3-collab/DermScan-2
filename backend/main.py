@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import anthropic
 import base64
+import os
 
 app = FastAPI()
 
@@ -13,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = anthropic.Anthropic(api_key="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")
+client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 @app.get("/")
 def root():

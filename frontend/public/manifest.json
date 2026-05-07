@@ -1,7 +1,7 @@
 {
-  "name": "DermScan - AI Skin Intelligence",
+  "name": "DermScan",
   "short_name": "DermScan",
-  "description": "AI-powered skin health analysis and healing tracker",
+  "description": "AI Powered Skin Intelligence",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

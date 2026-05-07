@@ -11,8 +11,8 @@ const SEV = {
 
 const glass = {
   background: "rgba(15,31,61,0.72)",
-  backdropFilter: "blur(14px)",
-  WebkitBackdropFilter: "blur(14px)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
   border: "1px solid rgba(100,160,255,0.15)",
 };
 
@@ -26,8 +26,8 @@ function matchCategory(scan, filter) {
 }
 
 export default function History() {
-  const [scans, setScans]       = useState([]);
-  const [filter, setFilter]     = useState("All");
+  const [scans, setScans]           = useState([]);
+  const [filter, setFilter]         = useState("All");
   const [expandedId, setExpandedId] = useState(null);
   const navigate = useNavigate();
 
@@ -35,6 +35,25 @@ export default function History() {
     const data = JSON.parse(localStorage.getItem("dermscan_scans") || "[]");
     setScans(data);
   }, []);
+
+  const save = (updated) => {
+    setScans(updated);
+    localStorage.setItem("dermscan_scans", JSON.stringify(updated));
+  };
+
+  const deleteOne = (id, e) => {
+    e.stopPropagation();
+    if (!confirm("Delete this scan?")) return;
+    save(scans.filter(s => s.id !== id));
+    if (expandedId === id) setExpandedId(null);
+  };
+
+  const clearAll = () => {
+    if (!confirm("Delete all scans? This cannot be undone.")) return;
+    setScans([]);
+    localStorage.removeItem("dermscan_scans");
+    setExpandedId(null);
+  };
 
   const filtered = filter === "Other"
     ? scans.filter(s => !matchCategory(s,"Wounds") && !matchCategory(s,"Rashes") && !matchCategory(s,"Blemishes"))
@@ -50,17 +69,26 @@ export default function History() {
     <div className="ds-fade" style={{ minHeight:"100vh", color:"white" }}>
 
       {/* Header */}
-      <div style={{ padding:"16px 20px", borderBottom:"1px solid rgba(100,160,255,0.1)" }}>
+      <div style={{ padding:"16px 20px", borderBottom:"1px solid rgba(100,160,255,0.1)", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ fontSize:16, fontWeight:700, color:"#42A5F5" }}>📊 Healing History</div>
+        {scans.length > 0 && (
+          <button
+            onClick={clearAll}
+            className="ds-pressable"
+            style={{ padding:"5px 14px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.22)", borderRadius:20, color:"#EF4444", fontSize:11, fontWeight:700, cursor:"pointer" }}
+          >
+            Clear All
+          </button>
+        )}
       </div>
 
       {/* Stats banner */}
       {scans.length > 0 && (
         <div className="ds-stagger" style={{ display:"flex", gap:10, padding:"14px 20px 0" }}>
           {[
-            { value: scans.length,                         label: "Total Scans", color: "#42A5F5" },
-            { value: `${avgHealing}%`,                     label: "Avg Healing", color: "#10B981" },
-            { value: SEV[scans[0]?.severity]?.label ?? "—", label: "Last Scan",  color: SEV[scans[0]?.severity]?.color ?? "#8BA4C8" },
+            { value: scans.length,                          label: "Total Scans", color: "#42A5F5" },
+            { value: `${avgHealing}%`,                      label: "Avg Healing", color: "#10B981" },
+            { value: SEV[scans[0]?.severity]?.label ?? "—", label: "Last Scan",   color: SEV[scans[0]?.severity]?.color ?? "#8BA4C8" },
           ].map(s => (
             <div key={s.label} style={{ ...glass, flex:1, borderRadius:14, padding:"12px 8px", textAlign:"center" }}>
               <div style={{ fontSize:17, fontWeight:800, color:s.color }}>{s.value}</div>
@@ -122,8 +150,16 @@ export default function History() {
                   key={scan.id}
                   onClick={() => toggleExpand(scan.id)}
                   className="ds-pressable"
-                  style={{ ...glass, borderRadius:18, padding:14, display:"flex", flexDirection:"column", gap:10, cursor:"pointer" }}
+                  style={{ ...glass, borderRadius:18, padding:14, display:"flex", flexDirection:"column", gap:10, cursor:"pointer", position:"relative" }}
                 >
+                  {/* Delete button */}
+                  <button
+                    onClick={(e) => deleteOne(scan.id, e)}
+                    style={{ position:"absolute", top:10, right:10, width:28, height:28, minHeight:"unset", borderRadius:"50%", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.18)", color:"#EF4444", fontSize:12, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", zIndex:1, padding:0 }}
+                  >
+                    🗑️
+                  </button>
+
                   {/* Thumbnail */}
                   <div style={{ width:"100%", height:120, borderRadius:12, overflow:"hidden", background:"#1A2D50", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                     {scan.imageUrl
@@ -134,7 +170,7 @@ export default function History() {
 
                   {/* Meta */}
                   <div>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:4, paddingRight:34 }}>
                       <div style={{ fontSize:12, fontWeight:700, color:"white", flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", marginRight:8 }}>
                         {scan.condition || "Scan"}
                       </div>

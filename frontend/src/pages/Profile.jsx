@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 
 const glass = {
   background: "rgba(15,31,61,0.72)",
-  backdropFilter: "blur(14px)",
-  WebkitBackdropFilter: "blur(14px)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
   border: "1px solid rgba(100,160,255,0.15)",
 };
 
@@ -13,6 +13,13 @@ function Toggle({ value, onChange }) {
       <div style={{ position:"absolute", top:4, left: value?24:4, width:16, height:16, borderRadius:"50%", background:"white", transition:"left 0.25s cubic-bezier(0.34,1.56,0.64,1)", boxShadow:"0 1px 4px rgba(0,0,0,0.35)" }} />
     </div>
   );
+}
+
+function getMotivation(count) {
+  if (count === 0) return "Take your first scan to start your skin health journey.";
+  if (count < 4)  return "Great start! Keep monitoring your skin health.";
+  if (count < 10) return "You're building healthy habits! Keep it up. 🌟";
+  return "Skin health expert! You're doing amazing. 🏆";
 }
 
 export default function Profile() {
@@ -33,9 +40,23 @@ export default function Profile() {
     ? Math.round(scans.reduce((sum, s) => sum + (s.healingPercent ?? 0), 0) / scans.length)
     : 0;
 
+  const radius       = 50;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset    = circumference * (1 - avgHealing / 100);
+
+  const shareProfile = async () => {
+    if (!navigator.share) { alert("Sharing not supported on this device."); return; }
+    try {
+      await navigator.share({
+        title: "My DermScan Health Score",
+        text: `My DermScan skin health score: ${avgHealing}% average healing across ${totalScans} scan${totalScans !== 1 ? "s" : ""}. Try DermScan for AI-powered skin analysis!`,
+      });
+    } catch {}
+  };
+
   const settingsRows = [
-    { icon:"🔔", label:"Healing Reminders", sub:"Daily check-in notifications",     right:<Toggle value={reminders}    onChange={setReminders} /> },
-    { icon:"🔒", label:"Private Mode",       sub:"Hide scans from shared devices",   right:<Toggle value={privateMode}  onChange={setPrivateMode} /> },
+    { icon:"🔔", label:"Healing Reminders", sub:"Daily check-in notifications",     right:<Toggle value={reminders}   onChange={setReminders} /> },
+    { icon:"🔒", label:"Private Mode",       sub:"Hide scans from shared devices",   right:<Toggle value={privateMode} onChange={setPrivateMode} /> },
     { icon:"🌐", label:"Language",           sub:"App display language",             right:<div style={{fontSize:12,color:"#42A5F5"}}>English</div> },
     { icon:"👑", label:"Upgrade to Premium", sub:"Unlock advanced AI features",      right:<div style={{fontSize:16,color:"#42A5F5"}}>›</div>, action:() => alert("Premium coming soon!") },
     { icon:"📄", label:"Privacy Policy",     sub:"How we handle your data",          right:<div style={{fontSize:16,color:"#42A5F5"}}>›</div>, action:() => alert("Your data stays on your device. Nothing is shared without your consent.") },
@@ -50,17 +71,49 @@ export default function Profile() {
 
       <div style={{ maxWidth:700, margin:"0 auto", padding:"28px 20px 100px" }}>
 
-        {/* Avatar section */}
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:32 }}>
-          <div style={{ position:"relative", marginBottom:14 }}>
-            {/* Animated outer ring */}
-            <div style={{ position:"absolute", inset:-6, borderRadius:"50%", border:"2px solid transparent", background:"linear-gradient(135deg,#7C3AED,#42A5F5,#7C3AED) border-box", WebkitMask:"linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)", WebkitMaskComposite:"destination-out", maskComposite:"exclude", animation:"spin 6s linear infinite" }} />
-            <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#1565C0)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, fontWeight:800, color:"white", boxShadow:"0 0 32px rgba(124,58,237,0.4)" }}>
+        {/* Avatar with SVG health ring */}
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:28 }}>
+          <div style={{ position:"relative", width:112, height:112, marginBottom:14, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            {/* SVG health score ring */}
+            <svg width="112" height="112" style={{ position:"absolute", inset:0 }}>
+              <defs>
+                <linearGradient id="healthGrad" gradientUnits="userSpaceOnUse" x1="56" y1="6" x2="56" y2="106">
+                  <stop offset="0%" stopColor="#7C3AED" />
+                  <stop offset="100%" stopColor="#42A5F5" />
+                </linearGradient>
+              </defs>
+              {/* Track */}
+              <circle cx="56" cy="56" r={radius} fill="none" stroke="rgba(100,160,255,0.1)" strokeWidth="6" />
+              {/* Progress */}
+              <circle
+                cx="56" cy="56" r={radius}
+                fill="none"
+                stroke={avgHealing > 0 ? "url(#healthGrad)" : "rgba(100,160,255,0.1)"}
+                strokeWidth="6"
+                strokeDasharray={circumference}
+                strokeDashoffset={dashOffset}
+                strokeLinecap="round"
+                transform="rotate(-90, 56, 56)"
+                style={{ transition:"stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)" }}
+              />
+            </svg>
+            {/* Avatar circle */}
+            <div style={{ width:84, height:84, borderRadius:"50%", background:"linear-gradient(135deg,#7C3AED,#1565C0)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, fontWeight:800, color:"white", boxShadow:"0 0 28px rgba(124,58,237,0.4)", zIndex:1 }}>
               ME
             </div>
           </div>
+
           <div style={{ fontSize:17, fontWeight:800, color:"white" }}>My Profile</div>
           <div style={{ fontSize:12, color:"#8BA4C8", marginTop:3 }}>DermScan Member</div>
+
+          {avgHealing > 0 && (
+            <div style={{ fontSize:22, fontWeight:900, color:"#42A5F5", marginTop:6 }}>{avgHealing}% <span style={{fontSize:12,fontWeight:400,color:"#8BA4C8"}}>avg healing</span></div>
+          )}
+
+          {/* Motivational message */}
+          <div style={{ marginTop:10, fontSize:12, color:"#6EE7B7", textAlign:"center", padding:"8px 20px", background:"rgba(16,185,129,0.07)", border:"1px solid rgba(16,185,129,0.15)", borderRadius:12, maxWidth:280 }}>
+            {getMotivation(totalScans)}
+          </div>
         </div>
 
         {/* Stats */}
@@ -77,6 +130,17 @@ export default function Profile() {
             </div>
           ))}
         </div>
+
+        {/* Share button */}
+        {navigator.share && (
+          <button
+            onClick={shareProfile}
+            className="ds-pressable"
+            style={{ width:"100%", marginBottom:20, padding:"13px", background:"rgba(66,165,245,0.08)", border:"1px solid rgba(66,165,245,0.22)", borderRadius:14, color:"#42A5F5", fontWeight:700, fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}
+          >
+            ↗ Share My Health Score
+          </button>
+        )}
 
         {/* Settings */}
         <div style={{ ...glass, borderRadius:20, overflow:"hidden", marginBottom:28 }}>
@@ -97,11 +161,10 @@ export default function Profile() {
           ))}
         </div>
 
-        <div style={{ textAlign:"center", fontSize:11, color:"rgba(100,160,255,0.25)", paddingBottom:8 }}>
+        <div style={{ textAlign:"center", fontSize:11, color:"rgba(100,160,255,0.22)", paddingBottom:8 }}>
           DermScan v1.0.0
         </div>
       </div>
-
     </div>
   );
 }

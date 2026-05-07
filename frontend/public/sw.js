@@ -1,4 +1,4 @@
-const CACHE = 'dermscan-v2';
+const CACHE = 'dermscan-v3';
 
 const PRECACHE = [
   '/',
